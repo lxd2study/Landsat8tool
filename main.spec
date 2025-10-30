@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Landsat8_TOOL',
+    name='Landsat8TOOL',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
