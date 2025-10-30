@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landsat 8 影像预处理工具 - 增强版</title>
+
+  <!-- Element Plus CSS (本地) -->
+  <link rel="stylesheet" href="libs/element-plus.css">
+
+  <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: #f5f7fa;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      #app {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .app-header {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        padding: 30px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .app-header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        color: #2c3e50;
+      }
+
+      .app-header p {
+        font-size: 1.1em;
+        color: #7f8c8d;
+      }
+
+      .main-container {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .section-title {
+        font-size: 1.3em;
+        color: #2c3e50;
+        margin: 25px 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ecf0f1;
+      }
+
+      .upload-section {
+        margin-bottom: 25px;
+      }
+
+      .band-preview {
+        margin-top: 15px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+      }
+
+      .composite-tips {
+        margin-top: 12px;
+        padding: 12px;
+        background-color: #f8f9fa;
+        border-left: 3px solid #bdc3c7;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #606266;
+      }
+
+      /* 增强的进度显示样式 */
+      .progress-container {
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .progress-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #303133;
+      }
+
+      .progress-time {
+        font-size: 14px;
+        color: #606266;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .current-step-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #95a5a6;
+      }
+
+      .current-step-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .current-step-detail {
+        font-size: 14px;
+        color: #606266;
+        line-height: 1.6;
+      }
+
+      .step-icon {
+        display: inline-flex;
+        width: 24px;
+        height: 24px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #95a5a6;
+        color: white;
+        font-size: 12px;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      }
+
+      .steps-timeline {
+        margin-top: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+      }
+
+      .timeline-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 12px 0;
+        position: relative;
+      }
+
+      .timeline-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        left: 12px;
+        top: 36px;
+        width: 2px;
+        height: calc(100% - 12px);
+        background: #e4e7ed;
+      }
+
+      .timeline-item.completed::after {
+        background: #67c23a;
+      }
+
+      .timeline-item.active::after {
+        background: linear-gradient(to bottom, #409eff, #e4e7ed);
+      }
+
+      .timeline-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+        font-size: 12px;
+        transition: all 0.3s ease;
+      }
+
+      .timeline-item.pending .timeline-dot {
+        background: #e4e7ed;
+        border: 2px solid #dcdfe6;
+        color: #909399;
+      }
+
+      .timeline-item.active .timeline-dot {
+        background: #95a5a6;
+        border: 2px solid #95a5a6;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(149, 165, 166, 0.2);
+      }
+
+      .timeline-item.completed .timeline-dot {
+        background: #7f8c8d;
+        border: 2px solid #7f8c8d;
+        color: white;
+      }
+
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .timeline-content {
+        flex: 1;
+      }
+
+      .timeline-step-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #303133;
+        margin-bottom: 4px;
+      }
+
+      .timeline-item.pending .timeline-step-title {
+        color: #909399;
+      }
+
+      .timeline-step-detail {
+        font-size: 13px;
+        color: #606266;
+        line-height: 1.5;
+      }
+
+      .timeline-item.pending .timeline-step-detail {
+        color: #c0c4cc;
+      }
+
+      .timeline-step-time {
+        font-size: 12px;
+        color: #909399;
+        margin-top: 4px;
+      }
+
+      .info-card {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #bdc3c7;
+      }
+
+      .footer {
+        text-align: center;
+        color: #7f8c8d;
+        margin-top: 30px;
+        padding: 20px;
+      }
+
+      @media (max-width: 768px) {
+        .app-header h1 {
+          font-size: 2em;
+        }
+
+        .main-container {
+          padding: 20px;
+        }
+      }
+    </style>
+</head>
+<body>
+  <div id="app">
+    <div class="app-header">
+      <h1>🛰️ Landsat 8 影像预处理工具</h1>
+      <p>一键完成辐射定标、大气校正、云掩膜、裁剪和波段合成</p>
+    </div>
+
+    <div class="main-container">
+      <el-tabs v-model="activeTab" type="card">
+        <!-- 影像处理标签页 -->
+        <el-tab-pane label="🖼️ 影像处理" name="processing">
+          <landsat8-processor></landsat8-processor>
+        </el-tab-pane>
+
+        <!-- 波段信息标签页 -->
+        <el-tab-pane label="📊 波段信息" name="bands">
+          <band-info-panel></band-info-panel>
+        </el-tab-pane>
+
+        <!-- 合成类型标签页 -->
+        <el-tab-pane label="🎨 合成类型" name="composites">
+          <composite-types-panel></composite-types-panel>
+        </el-tab-pane>
+
+        <!-- 工具箱标签页 -->
+        <el-tab-pane label="🔧 工具箱" name="tools">
+          <tools-panel></tools-panel>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
+    <div class="footer">
+      <p>© 2025 LXD | Landsat8批量处理工具 v1.0.0 | 基于FastAPI框架开发</p>
+    </div>
+  </div>
+
+  <!-- Vue 3 (本地) -->
+  <script src="libs/vue.global.js"></script>
+
+  <!-- Element Plus (本地) -->
+  <script src="libs/element-plus.js"></script>
+
+  <!-- Element Plus Icons (本地) -->
+  <script src="libs/element-plus-icons.js"></script>
+
+  <!-- Axios (本地) -->
+  <script src="libs/axios.min.js"></script>
+
+  <script>
+    const { createApp, ref, computed, reactive, onMounted } = Vue;
+    const { ElMessage, ElMessageBox } = ElementPlus;
+
+    const API_BASE_URL = 'http://localhost:5001';
+
+    // 波段信息面板组件
+    const BandInfoPanelComponent = {
+      name: 'BandInfoPanel',
+      setup() {
+        const bands = ref([]);
+        const loading = ref(false);
+        const satellite = ref('');
+        const sensor = ref('');
+
+        const fetchBandInfo = async () => {
+          loading.value = true;
+          try {
+            const response = await axios.get(`${API_BASE_URL}/band_info`);
+            bands.value = response.data.bands;
+            satellite.value = response.data.satellite;
+            sensor.value = response.data.sensor;
+            ElMessage.success('波段信息加载成功');
+          } catch (error) {
+            ElMessage.error('加载波段信息失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        onMounted(() => {
+          fetchBandInfo();
+        });
+
+        return {
+          bands,
+          loading,
+          satellite,
+          sensor,
+          fetchBandInfo
+        };
+      },
+      template: `
+        <div v-loading="loading">
+          <h2 class="section-title">Landsat 8 波段详细信息</h2>
+
+          <el-alert
+            :title="satellite + ' ' + sensor"
+            type="info"
+            :closable="false"
+            style="margin-bottom: 20px;"
+          >
+            Landsat 8搭载OLI（陆地成像仪）和TIRS（热红外传感器），提供11个波段的多光谱数据
+          </el-alert>
+
+          <el-table :data="bands" stripe style="width: 100%">
+            <el-table-column prop="band" label="波段" width="80">
+              <template #default="scope">
+                <el-tag type="primary">{{ scope.row.band }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="name" label="名称" width="120" />
+            <el-table-column prop="wavelength" label="波长范围" width="150" />
+            <el-table-column prop="resolution" label="分辨率" width="100" />
+            <el-table-column prop="use" label="主要用途" show-overflow-tooltip />
+          </el-table>
+
+          <div style="margin-top: 20px; text-align: center;">
+            <el-button type="primary" @click="fetchBandInfo" :loading="loading">
+              刷新波段信息
+            </el-button>
+          </div>
+        </div>
+      `
+    };
+
+    // 合成类型面板组件
+    const CompositeTypesPanelComponent = {
+      name: 'CompositeTypesPanel',
+      setup() {
+        const compositeTypes = ref([]);
+        const loading = ref(false);
+
+        const fetchCompositeTypes = async () => {
+          loading.value = true;
+          try {
+            const response = await axios.get(`${API_BASE_URL}/composite_types`);
+            compositeTypes.value = response.data.composite_types;
+            ElMessage.success('合成类型信息加载成功');
+          } catch (error) {
+            ElMessage.error('加载合成类型失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        onMounted(() => {
+          fetchCompositeTypes();
+        });
+
+        const getTypeColor = (type) => {
+          const colors = {
+            'true_color': '#67c23a',
+            'false_color': '#e6a23c',
+            'agriculture': '#909399',
+            'urban': '#f56c6c',
+            'natural_color': '#409eff',
+            'swir': '#c71585',
+            'ndvi': '#00ced1'
+          };
+          return colors[type] || '#409eff';
+        };
+
+        return {
+          compositeTypes,
+          loading,
+          fetchCompositeTypes,
+          getTypeColor
+        };
+      },
+      template: `
+        <div v-loading="loading">
+          <h2 class="section-title">波段合成类型说明</h2>
+
+          <el-alert
+            title="选择合适的合成类型"
+            type="info"
+            :closable="false"
+            style="margin-bottom: 20px;"
+          >
+            不同的波段组合可以突出不同的地物特征，请根据研究目的选择合适的合成方案
+          </el-alert>
+
+          <el-row :gutter="20">
+            <el-col :span="12" v-for="composite in compositeTypes" :key="composite.type" style="margin-bottom: 20px;">
+              <el-card shadow="hover">
+                <template #header>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: bold; font-size: 16px;">{{ composite.name }}</span>
+                    <el-tag :color="getTypeColor(composite.type)" style="color: white;">{{ composite.type }}</el-tag>
+                  </div>
+                </template>
+                <div>
+                  <p style="margin-bottom: 10px;">
+                    <strong>波段组合:</strong> {{ composite.bands.join(' - ') }}
+                  </p>
+                  <p style="margin-bottom: 10px;">
+                    <strong>说明:</strong> {{ composite.description }}
+                  </p>
+                  <el-divider style="margin: 12px 0;" />
+                  <p style="color: #606266; font-size: 14px;">
+                    <strong>应用场景:</strong> {{ composite.use_case }}
+                  </p>
+                </div>
+              </el-card>
+            </el-col>
+          </el-row>
+
+          <div style="margin-top: 20px; text-align: center;">
+            <el-button type="primary" @click="fetchCompositeTypes" :loading="loading">
+              刷新合成类型
+            </el-button>
+          </div>
+        </div>
+      `
+    };
+
+    // 工具箱面板组件
+    const ToolsPanelComponent = {
+      name: 'ToolsPanel',
+      setup() {
+        const mtlFile = ref([]);
+        const mtlResult = ref(null);
+        const mtlLoading = ref(false);
+
+        const qaFile = ref([]);
+        const qaResult = ref(null);
+        const qaLoading = ref(false);
+        const confidenceThreshold = ref('medium');
+
+        // MTL文件解析
+        const parseMTL = async () => {
+          if (mtlFile.value.length === 0) {
+            ElMessage.warning('请先选择MTL文件');
+            return;
+          }
+
+          mtlLoading.value = true;
+          try {
+            const formData = new FormData();
+            formData.append('mtl_file', mtlFile.value[0].raw);
+
+            const response = await axios.post(
+              `${API_BASE_URL}/read_mtl`,
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' }
+              }
+            );
+
+            mtlResult.value = response.data;
+            ElMessage.success('MTL文件解析成功');
+          } catch (error) {
+            ElMessage.error('MTL文件解析失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            mtlLoading.value = false;
+          }
+        };
+
+        // 云掩膜分析
+        const analyzeCloudMask = async () => {
+          if (qaFile.value.length === 0) {
+            ElMessage.warning('请先选择QA波段文件');
+            return;
+          }
+
+          qaLoading.value = true;
+          try {
+            const formData = new FormData();
+            formData.append('qa_band', qaFile.value[0].raw);
+            formData.append('confidence_threshold', confidenceThreshold.value);
+
+            const response = await axios.post(
+              `${API_BASE_URL}/extract_cloud_mask`,
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' }
+              }
+            );
+
+            qaResult.value = response.data;
+            ElMessage.success(response.data.message);
+          } catch (error) {
+            ElMessage.error('云掩膜分析失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            qaLoading.value = false;
+          }
+        };
+
+        return {
+          mtlFile,
+          mtlResult,
+          mtlLoading,
+          parseMTL,
+          qaFile,
+          qaResult,
+          qaLoading,
+          confidenceThreshold,
+          analyzeCloudMask
+        };
+      },
+      template: `
+        <div>
+          <h2 class="section-title">🔧 工具箱</h2>
+
+          <!-- MTL文件解析 -->
+          <el-card style="margin-bottom: 20px;">
+            <template #header>
+              <div style="font-weight: bold;">📋 MTL元数据解析</div>
+            </template>
+            <el-form label-width="120px">
+              <el-form-item label="MTL文件:">
+                <el-upload
+                  v-model:file-list="mtlFile"
+                  :auto-upload="false"
+                  :limit="1"
+                  accept=".txt"
+                >
+                  <el-button type="primary">选择MTL文件</el-button>
+                  <template #tip>
+                    <div class="el-upload__tip">
+                      选择 *_MTL.txt 元数据文件进行解析
+                    </div>
+                  </template>
+                </el-upload>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button
+                  type="success"
+                  @click="parseMTL"
+                  :loading="mtlLoading"
+                  :disabled="mtlFile.length === 0"
+                >
+                  解析MTL文件
+                </el-button>
+              </el-form-item>
+            </el-form>
+
+            <div v-if="mtlResult" style="margin-top: 20px;">
+              <el-alert
+                title="MTL文件解析结果"
+                type="success"
+                :closable="false"
+                style="margin-bottom: 15px;"
+              />
+              <el-descriptions :column="2" border>
+                <el-descriptions-item label="文件名">{{ mtlResult.filename }}</el-descriptions-item>
+                <el-descriptions-item label="场景ID">{{ mtlResult.metadata.scene_id }}</el-descriptions-item>
+                <el-descriptions-item label="采集日期">{{ mtlResult.metadata.date_acquired }}</el-descriptions-item>
+                <el-descriptions-item label="太阳高度角">{{ mtlResult.metadata.sun_elevation }}°</el-descriptions-item>
+                <el-descriptions-item label="太阳方位角">{{ mtlResult.metadata.sun_azimuth }}°</el-descriptions-item>
+                <el-descriptions-item label="云覆盖率">{{ mtlResult.metadata.cloud_cover }}%</el-descriptions-item>
+              </el-descriptions>
+            </div>
+          </el-card>
+
+          <!-- 云掩膜分析 -->
+          <el-card>
+            <template #header>
+              <div style="font-weight: bold;">☁️ 云掩膜分析</div>
+            </template>
+            <el-form label-width="120px">
+              <el-form-item label="QA波段:">
+                <el-upload
+                  v-model:file-list="qaFile"
+                  :auto-upload="false"
+                  :limit="1"
+                  accept=".tif,.tiff,.img"
+                >
+                  <el-button type="primary">选择QA波段</el-button>
+                  <template #tip>
+                    <div class="el-upload__tip">
+                      选择 *_BQA.TIF 质量评价波段
+                    </div>
+                  </template>
+                </el-upload>
+              </el-form-item>
+
+              <el-form-item label="置信度阈值:">
+                <el-radio-group v-model="confidenceThreshold">
+                  <el-radio label="low">低</el-radio>
+                  <el-radio label="medium">中</el-radio>
+                  <el-radio label="high">高</el-radio>
+                </el-radio-group>
+                <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                  阈值越高，云检测越严格
+                </div>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button
+                  type="success"
+                  @click="analyzeCloudMask"
+                  :loading="qaLoading"
+                  :disabled="qaFile.length === 0"
+                >
+                  分析云掩膜
+                </el-button>
+              </el-form-item>
+            </el-form>
+
+            <div v-if="qaResult" style="margin-top: 20px;">
+              <el-alert
+                :title="'云覆盖率: ' + qaResult.statistics.cloud_percentage + '%'"
+                :type="qaResult.statistics.cloud_percentage > 50 ? 'warning' : 'success'"
+                :closable="false"
+                style="margin-bottom: 15px;"
+              />
+              <el-descriptions :column="2" border>
+                <el-descriptions-item label="文件名">{{ qaResult.filename }}</el-descriptions-item>
+                <el-descriptions-item label="置信度阈值">{{ qaResult.statistics.confidence_threshold }}</el-descriptions-item>
+                <el-descriptions-item label="总像元数">{{ qaResult.statistics.total_pixels.toLocaleString() }}</el-descriptions-item>
+                <el-descriptions-item label="云像元数">{{ qaResult.statistics.cloud_pixels.toLocaleString() }}</el-descriptions-item>
+                <el-descriptions-item label="晴空像元数">{{ qaResult.statistics.clear_pixels.toLocaleString() }}</el-descriptions-item>
+                <el-descriptions-item label="影像尺寸">{{ qaResult.shape[0] }} × {{ qaResult.shape[1] }}</el-descriptions-item>
+              </el-descriptions>
+
+              <div style="margin-top: 15px;">
+                <el-progress
+                  :percentage="qaResult.statistics.cloud_percentage"
+                  :color="qaResult.statistics.cloud_percentage > 50 ? '#f56c6c' : '#67c23a'"
+                  :stroke-width="20"
+                >
+                  <span style="color: #606266;">云覆盖率</span>
+                </el-progress>
+              </div>
+            </div>
+          </el-card>
+        </div>
+      `
+    };
+
+    const Landsat8ProcessorComponent = {
+      name: 'Landsat8Processor',
+      setup() {
+        const form = reactive({
+          outputDir: 'E:\\Landsat8_Output',
+          clipExtent: '',
+          createComposites: ['true_color'],
+          applyCloudMask: false
+        });
+
+        const bandFiles = ref([]);
+        const mtlFile = ref([]);
+        const qaFile = ref([]);
+        const shapeFiles = ref([]);
+        const bandMap = ref({});
+        const processing = ref(false);
+        const processingResult = ref(null);
+        const progressPercentage = ref(0);
+        const progressStatus = ref('');
+        const statusText = ref('');
+        const selectingFolder = ref(false);
+
+        // 新增: 处理步骤追踪
+        const processingSteps = ref([
+          { id: 1, title: '上传文件', detail: '正在上传波段文件到服务器', status: 'pending', time: '' },
+          { id: 2, title: '解析元数据', detail: '读取MTL文件和影像信息', status: 'pending', time: '' },
+          { id: 3, title: '辐射定标', detail: 'DN值转换为地表反射率', status: 'pending', time: '' },
+          { id: 4, title: '大气校正', detail: 'DOS暗目标法大气校正', status: 'pending', time: '' },
+          { id: 5, title: '云掩膜处理', detail: '提取并应用云掩膜', status: 'pending', time: '' },
+          { id: 6, title: '影像裁剪', detail: '按指定范围裁剪影像', status: 'pending', time: '' },
+          { id: 7, title: '波段合成', detail: '生成合成影像', status: 'pending', time: '' },
+          { id: 8, title: '保存结果', detail: '写入输出文件', status: 'pending', time: '' },
+          { id: 9, title: '完成', detail: '处理完成，生成摘要', status: 'pending', time: '' }
+        ]);
+
+        const currentStepIndex = ref(-1);
+        const startTime = ref(null);
+        const elapsedTime = ref('00:00');
+
+        const canStartProcessing = computed(() => {
+          return Object.keys(bandMap.value).length > 0 && !processing.value && form.outputDir;
+        });
+
+        const currentStep = computed(() => {
+          if (currentStepIndex.value >= 0 && currentStepIndex.value < processingSteps.value.length) {
+            return processingSteps.value[currentStepIndex.value];
+          }
+          return null;
+        });
+
+        // 格式化时间
+        const formatTime = (seconds) => {
+          const mins = Math.floor(seconds / 60);
+          const secs = seconds % 60;
+          return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        };
+
+        // 更新经过时间
+        let timeInterval = null;
+        const updateElapsedTime = () => {
+          if (startTime.value) {
+            const elapsed = Math.floor((Date.now() - startTime.value) / 1000);
+            elapsedTime.value = formatTime(elapsed);
+          }
+        };
+
+        // 更新步骤状态
+        const updateStep = (index, status) => {
+          if (index >= 0 && index < processingSteps.value.length) {
+            processingSteps.value[index].status = status;
+            if (status === 'active') {
+              processingSteps.value[index].time = new Date().toLocaleTimeString();
+            } else if (status === 'completed') {
+              processingSteps.value[index].time = elapsedTime.value;
+            }
+            currentStepIndex.value = index;
+          }
+        };
+
+        const extractBandName = (filename) => {
+          const upperFilename = filename.toUpperCase();
+          for (let i = 1; i <= 11; i++) {
+            if (upperFilename.includes(`B${i}.`) || upperFilename.includes(`_B${i}.`)) {
+              return `B${i}`;
+            }
+          }
+          return null;
+        };
+
+        const handleBandChange = (file) => {
+          const bandName = extractBandName(file.name);
+          if (bandName) {
+            bandMap.value[bandName] = file.raw;
+            ElMessage.success(`已识别波段 ${bandName}`);
+          } else {
+            ElMessage.warning(`无法识别波段: ${file.name}`);
+          }
+        };
+
+        const handleBandRemove = (file) => {
+          const bandName = extractBandName(file.name);
+          if (bandName && bandMap.value[bandName]) {
+            delete bandMap.value[bandName];
+          }
+        };
+
+        const startProcessing = async () => {
+          if (Object.keys(bandMap.value).length === 0) {
+            ElMessage.error('请至少上传一个波段文件');
+            return;
+          }
+
+          processing.value = true;
+          progressPercentage.value = 0;
+          processingResult.value = null;
+          startTime.value = Date.now();
+          currentStepIndex.value = 0;
+
+          // 重置所有步骤状态
+          processingSteps.value.forEach(step => {
+            step.status = 'pending';
+            step.time = '';
+          });
+
+          // 启动计时器
+          timeInterval = setInterval(updateElapsedTime, 1000);
+
+          try {
+            const formData = new FormData();
+
+            // 步骤1: 上传文件
+            updateStep(0, 'active');
+            progressPercentage.value = 5;
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            Object.values(bandMap.value).forEach(file => {
+              formData.append('bands', file);
+            });
+
+            if (mtlFile.value.length > 0) {
+              formData.append('mtl_file', mtlFile.value[0].raw);
+            }
+
+            if (qaFile.value.length > 0) {
+              formData.append('qa_band', qaFile.value[0].raw);
+            }
+
+            formData.append('output_dir', form.outputDir);
+
+            if (form.createComposites.length > 0) {
+              formData.append('create_composites', form.createComposites.join(','));
+            }
+
+            formData.append('apply_cloud_mask', form.applyCloudMask.toString());
+
+            updateStep(0, 'completed');
+
+            // 模拟进度更新
+            const stepDurations = [0, 10, 20, 35, 50, 60, 70, 85, 95];
+            let stepIndex = 1;
+
+            const progressInterval = setInterval(() => {
+              if (stepIndex < processingSteps.value.length && processing.value) {
+                updateStep(stepIndex - 1, 'completed');
+                updateStep(stepIndex, 'active');
+                progressPercentage.value = stepDurations[stepIndex] || progressPercentage.value;
+                stepIndex++;
+              } else {
+                clearInterval(progressInterval);
+              }
+            }, 2000); // 每2秒更新一次步骤
+
+            const response = await axios.post(
+              `${API_BASE_URL}/preprocess_landsat8`,
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 300000
+              }
+            );
+
+            clearInterval(progressInterval);
+            clearInterval(timeInterval);
+
+            // 标记所有步骤完成
+            processingSteps.value.forEach((step, index) => {
+              if (step.status !== 'completed') {
+                updateStep(index, 'completed');
+              }
+            });
+
+            progressPercentage.value = 100;
+            progressStatus.value = 'success';
+            processingResult.value = response.data;
+
+            ElMessage.success({
+              message: '影像预处理完成！',
+              duration: 3000,
+              showClose: true
+            });
+          } catch (error) {
+            clearInterval(timeInterval);
+            progressPercentage.value = 100;
+            progressStatus.value = 'exception';
+
+            // 标记当前步骤为失败
+            if (currentStepIndex.value >= 0) {
+              processingSteps.value[currentStepIndex.value].status = 'exception';
+            }
+
+            ElMessage.error('处理失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            processing.value = false;
+          }
+        };
+
+        // 选择输出文件夹
+        const selectOutputFolder = async () => {
+          selectingFolder.value = true;
+          try {
+            const response = await axios.get(`${API_BASE_URL}/select_folder`);
+
+            if (response.data.status === 'success' && response.data.path) {
+              form.outputDir = response.data.path;
+              ElMessage.success('文件夹选择成功');
+            } else if (response.data.status === 'cancelled') {
+              ElMessage.info('已取消选择');
+            }
+          } catch (error) {
+            ElMessage.error('打开文件选择对话框失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            selectingFolder.value = false;
+          }
+        };
+
+        const resetForm = () => {
+          Object.assign(form, {
+            outputDir: 'E:\\Landsat8_Output',
+            clipExtent: '',
+            createComposites: ['true_color'],
+            applyCloudMask: false
+          });
+          bandFiles.value = [];
+          mtlFile.value = [];
+          qaFile.value = [];
+          bandMap.value = {};
+          processingResult.value = null;
+          progressPercentage.value = 0;
+          progressStatus.value = '';
+          currentStepIndex.value = -1;
+          elapsedTime.value = '00:00';
+          processingSteps.value.forEach(step => {
+            step.status = 'pending';
+            step.time = '';
+          });
+        };
+
+        return {
+          form,
+          bandFiles,
+          mtlFile,
+          qaFile,
+          bandMap,
+          processing,
+          processingResult,
+          progressPercentage,
+          progressStatus,
+          statusText,
+          processingSteps,
+          currentStep,
+          currentStepIndex,
+          elapsedTime,
+          canStartProcessing,
+          selectingFolder,
+          handleBandChange,
+          handleBandRemove,
+          startProcessing,
+          selectOutputFolder,
+          resetForm
+        };
+      },
+      template: `
+        <div>
+          <el-form :model="form" label-width="140px" size="default">
+            <!-- 波段文件上传 -->
+            <div class="upload-section">
+              <h3 class="section-title">📁 波段文件</h3>
+              <el-upload
+                v-model:file-list="bandFiles"
+                :auto-upload="false"
+                :on-change="handleBandChange"
+                :on-remove="handleBandRemove"
+                multiple
+                drag
+                accept=".tif,.tiff,.img"
+              >
+                <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                <div class="el-upload__text">
+                  拖拽 Landsat 8 波段文件到此处，或<em>点击上传</em>
+                </div>
+                <template #tip>
+                  <div class="el-upload__tip">
+                    支持 .tif, .tiff, .img 格式，文件名应包含波段编号
+                  </div>
+                </template>
+              </el-upload>
+
+              <div v-if="Object.keys(bandMap).length > 0" class="band-preview">
+                <h4>已识别波段:</h4>
+                <el-tag
+                  v-for="(file, band) in bandMap"
+                  :key="band"
+                  type="success"
+                  style="margin: 4px;"
+                >
+                  {{ band }}
+                </el-tag>
+              </div>
+            </div>
+
+            <!-- MTL和QA文件 -->
+            <div class="upload-section">
+              <h3 class="section-title">📋 元数据文件 (可选)</h3>
+              <el-form-item label="MTL元数据:">
+                <el-upload
+                  v-model:file-list="mtlFile"
+                  :auto-upload="false"
+                  :limit="1"
+                  accept=".txt"
+                >
+                  <el-button type="primary">选择MTL文件</el-button>
+                </el-upload>
+              </el-form-item>
+
+              <el-form-item label="QA波段:">
+                <el-upload
+                  v-model:file-list="qaFile"
+                  :auto-upload="false"
+                  :limit="1"
+                  accept=".tif,.tiff,.img"
+                >
+                  <el-button type="primary">选择QA波段</el-button>
+                </el-upload>
+              </el-form-item>
+            </div>
+
+            <!-- 输出设置 -->
+            <div class="upload-section">
+              <h3 class="section-title">💾 输出设置</h3>
+              <el-form-item label="输出目录:">
+                <div style="display: flex; gap: 10px;">
+                  <el-input
+                    v-model="form.outputDir"
+                    placeholder="输出路径"
+                    clearable
+                    style="flex: 1;"
+                  />
+                  <el-button
+                    type="primary"
+                    @click="selectOutputFolder"
+                    :loading="selectingFolder"
+                  >
+                    <el-icon><folder-opened /></el-icon>
+                    浏览
+                  </el-button>
+                </div>
+              </el-form-item>
+            </div>
+
+            <!-- 合成影像设置 -->
+            <div class="upload-section">
+              <h3 class="section-title">🎨 合成影像类型</h3>
+              <el-form-item>
+                <el-checkbox-group v-model="form.createComposites">
+                  <el-checkbox label="true_color">真彩色</el-checkbox>
+                  <el-checkbox label="false_color">假彩色</el-checkbox>
+                  <el-checkbox label="agriculture">农业</el-checkbox>
+                  <el-checkbox label="urban">城市</el-checkbox>
+                  <el-checkbox label="ndvi">NDVI</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </div>
+
+            <!-- 云掩膜设置 -->
+            <div class="upload-section">
+              <h3 class="section-title">☁️ 云掩膜设置</h3>
+              <el-form-item label="应用云掩膜:">
+                <el-switch
+                  v-model="form.applyCloudMask"
+                  :disabled="!qaFile.length"
+                />
+              </el-form-item>
+            </div>
+
+            <!-- 操作按钮 -->
+            <el-form-item>
+              <el-button
+                type="primary"
+                @click="startProcessing"
+                :loading="processing"
+                :disabled="!canStartProcessing"
+                size="large"
+              >
+                <span v-if="!processing">开始预处理</span>
+                <span v-else>处理中...</span>
+              </el-button>
+
+              <el-button @click="resetForm" size="large" :disabled="processing">
+                重置
+              </el-button>
+            </el-form-item>
+          </el-form>
+
+          <!-- 增强的进度显示 -->
+          <div v-if="processing || processingResult" class="progress-container">
+            <div class="progress-header">
+              <div class="progress-title">
+                <span v-if="processing">🚀 处理进行中</span>
+                <span v-else-if="progressStatus === 'success'">✅ 处理完成</span>
+                <span v-else-if="progressStatus === 'exception'">❌ 处理失败</span>
+              </div>
+              <div class="progress-time">
+                <el-icon><clock /></el-icon>
+                <span>已用时: {{ elapsedTime }}</span>
+              </div>
+            </div>
+
+            <!-- 当前步骤卡片 -->
+            <div v-if="processing && currentStep" class="current-step-card">
+              <div class="current-step-title">
+                <span class="step-icon">⚙</span>
+                {{ currentStep.title }}
+              </div>
+              <div class="current-step-detail">
+                {{ currentStep.detail }}
+              </div>
+            </div>
+
+            <!-- 总体进度条 -->
+            <el-progress
+              :percentage="progressPercentage"
+              :status="progressStatus"
+              :stroke-width="16"
+              :show-text="true"
+              style="margin-bottom: 20px;"
+            >
+              <template #default="{ percentage }">
+                <span style="font-weight: 600;">{{ percentage }}%</span>
+              </template>
+            </el-progress>
+
+            <!-- 步骤时间线 -->
+            <div class="steps-timeline">
+              <div
+                v-for="step in processingSteps"
+                :key="step.id"
+                :class="['timeline-item', step.status]"
+              >
+                <div class="timeline-dot">
+                  <span v-if="step.status === 'completed'">✓</span>
+                  <span v-else-if="step.status === 'active'">⚙</span>
+                  <span v-else>{{ step.id }}</span>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-step-title">{{ step.title }}</div>
+                  <div class="timeline-step-detail">{{ step.detail }}</div>
+                  <div v-if="step.time" class="timeline-step-time">
+                    <el-icon><clock /></el-icon>
+                    {{ step.time }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 处理结果 -->
+          <div v-if="processingResult">
+            <h3 class="section-title">📊 处理结果</h3>
+
+            <el-alert
+              v-if="processingResult.status === 'success'"
+              title="✅ 处理成功！"
+              type="success"
+              :closable="false"
+              show-icon
+              style="margin-bottom: 15px;"
+            />
+
+            <div v-if="processingResult.summary" style="margin-top: 15px;">
+              <el-descriptions :column="2" border>
+                <el-descriptions-item label="处理波段数">
+                  <el-tag type="success">{{ processingResult.summary.total_bands_processed }} 个</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="合成影像数">
+                  <el-tag type="primary">{{ processingResult.summary.composites_created }} 个</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="输出目录" :span="2">
+                  <el-text type="primary" style="word-break: break-all;">
+                    {{ processingResult.summary.output_directory }}
+                  </el-text>
+                </el-descriptions-item>
+              </el-descriptions>
+            </div>
+
+            <div v-if="processingResult.composites && Object.keys(processingResult.composites).length > 0" style="margin-top: 15px;">
+              <h4>🎨 合成影像文件:</h4>
+              <el-table :data="Object.entries(processingResult.composites).map(([k,v]) => ({type: k, path: v}))" stripe style="margin-top: 10px;">
+                <el-table-column prop="type" label="类型" width="150">
+                  <template #default="scope">
+                    <el-tag>{{ scope.row.type }}</el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="path" label="文件路径" show-overflow-tooltip />
+              </el-table>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    // 创建 Vue 应用
+    const app = createApp({
+      setup() {
+        const activeTab = ref('processing');
+
+        return {
+          activeTab
+        };
+      },
+      components: {
+        'landsat8-processor': Landsat8ProcessorComponent,
+        'band-info-panel': BandInfoPanelComponent,
+        'composite-types-panel': CompositeTypesPanelComponent,
+        'tools-panel': ToolsPanelComponent
+      }
+    });
+
+    // 注册 Element Plus
+    app.use(ElementPlus);
+
+    // 注册 Element Plus Icons
+    if (typeof ElementPlusIconsVue !== 'undefined') {
+      for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+        app.component(key, component);
+      }
+    }
+
+    // 挂载应用
+    app.mount('#app');
+  </script>
+</body>
+</html>
