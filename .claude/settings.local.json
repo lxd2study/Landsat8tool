@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"E:/Landsat8-v1.0.1/src/core\" \"E:/Landsat8-v1.0.1/src/operations\" \"E:/Landsat8-v1.0.1/src/services\" \"E:/Landsat8-v1.0.1/src/api\")",
+      "Bash(python test_refactor.py)",
+      "Bash(python test_refactor_simple.py)",
+      "Bash(del landsat8_processor.py main.py)",
+      "Bash(move /Y main_new_content.py main.py)",
+      "Bash(tree /F /A src)",
+      "Bash(find src -type f -name \"*.py\" -exec echo {} ;)"
+    ]
+  }
+}

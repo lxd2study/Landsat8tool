@@ -9,6 +9,17 @@
   <link rel="stylesheet" href="libs/element-plus.css">
 
   <style>
+      :root {
+        --primary: #2f6fe4;
+        --primary-soft: #7fa8ff;
+        --accent: #1fb981;
+        --text-main: #1e2a3b;
+        --text-muted: #5b6475;
+        --border: #e2e6ef;
+        --card-bg: #ffffff;
+        --card-shadow: 0 10px 30px rgba(17, 34, 68, 0.06);
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -16,10 +27,11 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #f5f7fa;
+        font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        background: #f7f8fb;
+        color: var(--text-main);
         min-height: 100vh;
-        padding: 20px;
+        padding: 28px 18px 40px;
       }
 
       #app {
@@ -28,209 +40,243 @@
       }
 
       .app-header {
-        text-align: center;
-        color: #2c3e50;
-        margin-bottom: 30px;
-        padding: 30px 20px;
-        background: white;
+        background: #0f172a;
+        color: #f3f6ff;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 28px 24px;
+        box-shadow: var(--card-shadow);
       }
 
       .app-header h1 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
-        color: #2c3e50;
+        font-size: 2.2em;
+        margin-bottom: 6px;
+        letter-spacing: 0.2px;
       }
 
       .app-header p {
-        font-size: 1.1em;
-        color: #7f8c8d;
+        font-size: 1em;
+        color: rgba(243, 246, 255, 0.82);
+        max-width: 900px;
+      }
+
+      .header-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        color: #f3f6ff;
+        font-size: 12px;
       }
 
       .main-container {
-        background: white;
+        background: #ffffff;
+        border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 22px;
+        box-shadow: var(--card-shadow);
+        margin-top: 18px;
       }
 
       .section-title {
-        font-size: 1.3em;
-        color: #2c3e50;
-        margin: 25px 0 15px 0;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #ecf0f1;
+        font-size: 1.1em;
+        color: var(--text-main);
+        margin: 18px 0 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--border);
       }
 
       .upload-section {
-        margin-bottom: 25px;
+        margin-bottom: 20px;
       }
 
       .band-preview {
-        margin-top: 15px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 6px;
-      }
-
-      .composite-tips {
-        margin-top: 12px;
+        margin-top: 14px;
         padding: 12px;
-        background-color: #f8f9fa;
-        border-left: 3px solid #bdc3c7;
-        border-radius: 4px;
-        font-size: 14px;
-        color: #606266;
+        background-color: #f6f9ff;
+        border-radius: 10px;
+        border: 1px dashed var(--border);
       }
 
-      /* 增强的进度显示样式 */
-      .progress-container {
-        padding: 25px;
-        background: #f8f9fa;
-        border-radius: 12px;
-        margin: 20px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      .processing-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .left-pane,
+      .right-pane {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .panel-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px;
+        box-shadow: 0 6px 18px rgba(17, 34, 68, 0.05);
+      }
+
+      .panel-card h3 {
+        margin-bottom: 6px;
+        font-size: 1.05em;
+      }
+
+      .action-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .progress-card {
+        padding: 0;
       }
 
       .progress-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        padding: 16px 18px 0;
       }
 
       .progress-title {
         font-size: 18px;
-        font-weight: bold;
-        color: #303133;
+        font-weight: 600;
+        color: var(--text-main);
       }
 
       .progress-time {
         font-size: 14px;
-        color: #606266;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .progress-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        color: var(--text-muted);
+        font-size: 13px;
+        padding: 0 18px;
+        margin-top: 6px;
+      }
+
+      .progress-meta .meta-label {
+        color: var(--text-muted);
+      }
+
+      .progress-meta .meta-value {
+        color: var(--text-main);
+        font-weight: 600;
+      }
+
+      .progress-meta .meta-sep {
+        color: #d0d6e0;
+      }
+
+      .current-step-card {
+        background: #f8fbff;
+        padding: 16px 18px;
+        border-radius: 10px;
+        margin: 12px 18px 0;
+        border: 1px solid var(--border);
+      }
+
+      .current-step-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      .current-step-card {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        border-left: 4px solid #95a5a6;
-      }
-
-      .current-step-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
       .current-step-detail {
-        font-size: 14px;
-        color: #606266;
+        font-size: 13px;
+        color: var(--text-muted);
         line-height: 1.6;
       }
 
-      .step-icon {
-        display: inline-flex;
-        width: 24px;
-        height: 24px;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: #95a5a6;
-        color: white;
-        font-size: 12px;
-      }
-
-      @keyframes pulse {
-        0%, 100% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        50% {
-          transform: scale(1.1);
-          opacity: 0.8;
-        }
-      }
-
       .steps-timeline {
-        margin-top: 20px;
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
+        margin-top: 16px;
+        padding: 0 18px 18px;
+      }
+
+      .progress-bar {
+        margin: 16px 18px 0;
       }
 
       .timeline-item {
         display: flex;
         align-items: flex-start;
-        padding: 12px 0;
+        padding: 10px 0;
         position: relative;
       }
 
       .timeline-item:not(:last-child)::after {
         content: '';
         position: absolute;
-        left: 12px;
-        top: 36px;
+        left: 14px;
+        top: 26px;
         width: 2px;
-        height: calc(100% - 12px);
+        height: calc(100% - 16px);
         background: #e4e7ed;
       }
 
       .timeline-item.completed::after {
-        background: #67c23a;
+        background: #1fb981;
       }
 
       .timeline-item.active::after {
-        background: linear-gradient(to bottom, #409eff, #e4e7ed);
+        background: linear-gradient(to bottom, var(--primary), #e4e7ed);
       }
 
       .timeline-dot {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 15px;
+        margin-right: 12px;
         flex-shrink: 0;
         position: relative;
         z-index: 1;
         font-size: 12px;
-        transition: all 0.3s ease;
-      }
-
-      .timeline-item.pending .timeline-dot {
-        background: #e4e7ed;
-        border: 2px solid #dcdfe6;
-        color: #909399;
+        background: #f0f2f8;
+        color: var(--text-muted);
+        border: 1px solid #d7dce5;
       }
 
       .timeline-item.active .timeline-dot {
-        background: #95a5a6;
-        border: 2px solid #95a5a6;
-        color: white;
-        box-shadow: 0 0 0 4px rgba(149, 165, 166, 0.2);
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
       }
 
       .timeline-item.completed .timeline-dot {
-        background: #7f8c8d;
-        border: 2px solid #7f8c8d;
-        color: white;
-      }
-
-      @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        background: #1fb981;
+        color: #fff;
+        border-color: #1fb981;
       }
 
       .timeline-content {
@@ -240,89 +286,151 @@
       .timeline-step-title {
         font-size: 14px;
         font-weight: 600;
-        color: #303133;
+        color: var(--text-main);
         margin-bottom: 4px;
-      }
-
-      .timeline-item.pending .timeline-step-title {
-        color: #909399;
       }
 
       .timeline-step-detail {
         font-size: 13px;
-        color: #606266;
+        color: var(--text-muted);
         line-height: 1.5;
-      }
-
-      .timeline-item.pending .timeline-step-detail {
-        color: #c0c4cc;
       }
 
       .timeline-step-time {
         font-size: 12px;
-        color: #909399;
+        color: var(--text-muted);
         margin-top: 4px;
       }
 
       .info-card {
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-        border-left: 4px solid #bdc3c7;
+        padding: 14px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        background-color: #f6f9ff;
+        border: 1px dashed var(--border);
+        color: var(--text-main);
       }
 
       .footer {
         text-align: center;
-        color: #7f8c8d;
-        margin-top: 30px;
-        padding: 20px;
+        color: var(--text-muted);
+        margin-top: 26px;
+        padding: 16px 10px;
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 1024px) {
+        .processing-layout {
+          grid-template-columns: 1fr;
+        }
+
         .app-header h1 {
           font-size: 2em;
         }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 16px 14px 26px;
+        }
 
         .main-container {
-          padding: 20px;
+          padding: 18px;
         }
+      }
+
+      .preview-box {
+        height: 320px;
+        background: #f7f8fb;
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .preview-box img,
+      .compare-stack img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .compare-stack {
+        position: relative;
+        height: 340px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f7f8fb;
+      }
+
+      .compare-stack .compare-base,
+      .compare-stack .compare-overlay {
+        position: absolute;
+        inset: 0;
+      }
+
+      .compare-stack .compare-overlay {
+        background: rgba(0,0,0,0.02);
+        overflow: hidden;
+      }
+
+      .compare-slider {
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 6px 10px;
+        background: rgba(255,255,255,0.85);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        backdrop-filter: blur(3px);
       }
     </style>
 </head>
 <body>
   <div id="app">
     <div class="app-header">
-      <h1>🛰️ Landsat 8 影像预处理工具</h1>
+      <h1>Landsat 8 影像预处理工具</h1>
       <p>一键完成辐射定标、大气校正、云掩膜、裁剪和波段合成</p>
+      <div class="header-meta">
+        <span class="pill">增强版界面</span>
+        <span class="pill">API 地址： http://localhost:5001</span>
+      </div>
     </div>
 
     <div class="main-container">
       <el-tabs v-model="activeTab" type="card">
         <!-- 影像处理标签页 -->
-        <el-tab-pane label="🖼️ 影像处理" name="processing">
+        <el-tab-pane label="影像处理" name="processing">
           <landsat8-processor></landsat8-processor>
         </el-tab-pane>
 
         <!-- 波段信息标签页 -->
-        <el-tab-pane label="📊 波段信息" name="bands">
+        <el-tab-pane label="波段信息" name="bands">
           <band-info-panel></band-info-panel>
         </el-tab-pane>
 
         <!-- 合成类型标签页 -->
-        <el-tab-pane label="🎨 合成类型" name="composites">
+        <el-tab-pane label="合成类型" name="composites">
           <composite-types-panel></composite-types-panel>
         </el-tab-pane>
 
+        <!-- 模型对比标签页 -->
+        <el-tab-pane label="模型对比" name="compare">
+          <model-compare-panel></model-compare-panel>
+        </el-tab-pane>
+
         <!-- 工具箱标签页 -->
-        <el-tab-pane label="🔧 工具箱" name="tools">
+        <el-tab-pane label="工具箱" name="tools">
           <tools-panel></tools-panel>
         </el-tab-pane>
       </el-tabs>
     </div>
 
     <div class="footer">
-      <p>© 2025 LXD | Landsat8批量处理工具 v1.0.0 | 基于FastAPI框架开发</p>
+      <p>© 2025 LXD | Landsat8批量处理工具 v1.0.2 | 基于FastAPI框架开发</p>
     </div>
   </div>
 
@@ -591,12 +699,12 @@
       },
       template: `
         <div>
-          <h2 class="section-title">🔧 工具箱</h2>
+          <h2 class="section-title">工具箱</h2>
 
           <!-- MTL文件解析 -->
           <el-card style="margin-bottom: 20px;">
             <template #header>
-              <div style="font-weight: bold;">📋 MTL元数据解析</div>
+              <div style="font-weight: bold;">MTL 元数据解析</div>
             </template>
             <el-form label-width="120px">
               <el-form-item label="MTL文件:">
@@ -648,7 +756,7 @@
           <!-- 云掩膜分析 -->
           <el-card>
             <template #header>
-              <div style="font-weight: bold;">☁️ 云掩膜分析</div>
+              <div style="font-weight: bold;">云掩膜分析</div>
             </template>
             <el-form label-width="120px">
               <el-form-item label="QA波段:">
@@ -721,6 +829,129 @@
       `
     };
 
+    // 模型对比组件（预览两幅影像）
+    const ModelComparePanelComponent = {
+      name: 'ModelCompare',
+      setup() {
+        const form = reactive({
+          pathA: '',
+          pathB: '',
+          maxSize: 512
+        });
+
+        const previewA = ref(null);
+        const previewB = ref(null);
+        const loading = ref(false);
+        const splitValue = ref(50);
+        const previewReady = computed(() => !!(previewA.value && previewB.value));
+
+        const fetchPreview = async (path) => {
+          const fd = new FormData();
+          fd.append('file_path', path);
+          fd.append('max_size', form.maxSize.toString());
+          const { data } = await axios.post(`${API_BASE_URL}/preview_raster`, fd, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          return data.preview?.base64 || null;
+        };
+
+        const loadPreview = async () => {
+          if (!form.pathA || !form.pathB) {
+            ElMessage.warning('请填写两条影像路径');
+            return;
+          }
+          loading.value = true;
+          splitValue.value = 50;
+          try {
+            const [a, b] = await Promise.all([
+              fetchPreview(form.pathA),
+              fetchPreview(form.pathB)
+            ]);
+            previewA.value = a;
+            previewB.value = b;
+            ElMessage.success('预览加载完成');
+          } catch (error) {
+            console.error('模型对比预览失败', error);
+            ElMessage.error('加载预览失败: ' + (error.response?.data?.detail || error.message));
+          } finally {
+            loading.value = false;
+          }
+        };
+
+        return {
+          form,
+          previewA,
+          previewB,
+          loading,
+          loadPreview,
+          splitValue,
+          previewReady
+        };
+      },
+      template: `
+        <div class="panel-card">
+          <h3 class="section-title">模型对比</h3>
+          <el-form label-width="120px">
+            <el-form-item label="影像 A 路径">
+              <el-input v-model="form.pathA" placeholder="例如：D:\\\\output\\\\dos\\\\true_color.tif" clearable />
+            </el-form-item>
+            <el-form-item label="影像 B 路径">
+              <el-input v-model="form.pathB" placeholder="例如：D:\\\\output\\\\6s\\\\true_color.tif" clearable />
+            </el-form-item>
+            <el-form-item label="预览最大边">
+              <el-input-number v-model="form.maxSize" :min="128" :max="1024" :step="64" />
+              <span style="font-size: 12px; color: #909399; margin-left: 8px;">像素</span>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :loading="loading" @click="loadPreview">
+                加载对比
+              </el-button>
+            </el-form-item>
+          </el-form>
+
+          <div class="processing-layout" style="margin-top: 12px;">
+            <div class="panel-card" style="box-shadow:none; border:1px solid var(--border);">
+              <h4 style="margin-bottom: 8px;">影像 A</h4>
+              <div class="preview-box">
+                <template v-if="previewA">
+                  <img :src="'data:image/png;base64,' + previewA" />
+                </template>
+                <template v-else>
+                  <span style="color:#909399; font-size: 13px;">等待加载...</span>
+                </template>
+              </div>
+            </div>
+            <div class="panel-card" style="box-shadow:none; border:1px solid var(--border);">
+              <h4 style="margin-bottom: 8px;">影像 B</h4>
+              <div class="preview-box">
+                <template v-if="previewB">
+                  <img :src="'data:image/png;base64,' + previewB" />
+                </template>
+                <template v-else>
+                  <span style="color:#909399; font-size: 13px;">等待加载...</span>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="previewReady" style="margin-top: 14px;">
+            <h4 style="margin-bottom: 8px;">滑动对比</h4>
+            <div class="compare-stack">
+              <div class="compare-base">
+                <img :src="'data:image/png;base64,' + previewA" />
+              </div>
+              <div class="compare-overlay" :style="{ width: splitValue + '%' }">
+                <img :src="'data:image/png;base64,' + previewB" />
+              </div>
+              <div class="compare-slider">
+                <el-slider v-model="splitValue" :min="0" :max="100" size="small" />
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
     const Landsat8ProcessorComponent = {
       name: 'Landsat8Processor',
       setup() {
@@ -728,7 +959,8 @@
           outputDir: 'E:\\Landsat8_Output',
           clipExtent: '',
           createComposites: ['true_color'],
-          applyCloudMask: false
+          applyCloudMask: false,
+          atmModel: 'dos'
         });
 
         const bandFiles = ref([]);
@@ -738,23 +970,30 @@
         const bandMap = ref({});
         const processing = ref(false);
         const processingResult = ref(null);
+        const compositePreviews = ref({});
+        const previewLoading = ref(false);
         const progressPercentage = ref(0);
         const progressStatus = ref('');
         const statusText = ref('');
         const selectingFolder = ref(false);
+        const jobId = ref(null);
 
-        // 新增: 处理步骤追踪
-        const processingSteps = ref([
-          { id: 1, title: '上传文件', detail: '正在上传波段文件到服务器', status: 'pending', time: '' },
-          { id: 2, title: '解析元数据', detail: '读取MTL文件和影像信息', status: 'pending', time: '' },
-          { id: 3, title: '辐射定标', detail: 'DN值转换为地表反射率', status: 'pending', time: '' },
-          { id: 4, title: '大气校正', detail: 'DOS暗目标法大气校正', status: 'pending', time: '' },
-          { id: 5, title: '云掩膜处理', detail: '提取并应用云掩膜', status: 'pending', time: '' },
-          { id: 6, title: '影像裁剪', detail: '按指定范围裁剪影像', status: 'pending', time: '' },
-          { id: 7, title: '波段合成', detail: '生成合成影像', status: 'pending', time: '' },
-          { id: 8, title: '保存结果', detail: '写入输出文件', status: 'pending', time: '' },
-          { id: 9, title: '完成', detail: '处理完成，生成摘要', status: 'pending', time: '' }
+        let statusTimer = null;
+        let pollErrorCount = 0;
+
+        const createDefaultSteps = () => ([
+          { id: 'upload', title: '上传文件', detail: '保存上传的数据', status: 'pending', time: '' },
+          { id: 'prepare_output', title: '准备输出目录', detail: '创建输出路径', status: 'pending', time: '' },
+          { id: 'metadata', title: '解析元数据', detail: '读取MTL并准备参数', status: 'pending', time: '' },
+          { id: 'cloud_mask', title: '云掩膜处理', detail: '提取或跳过云掩膜', status: 'pending', time: '' },
+          { id: 'bands', title: '波段处理', detail: '辐射定标与大气校正', status: 'pending', time: '' },
+          { id: 'clip', title: '影像裁剪', detail: '按范围或矢量裁剪', status: 'pending', time: '' },
+          { id: 'composite', title: '波段合成', detail: '生成合成影像', status: 'pending', time: '' },
+          { id: 'finalize', title: '完成', detail: '写入输出并汇总', status: 'pending', time: '' }
         ]);
+
+        // 处理步骤追踪
+        const processingSteps = ref(createDefaultSteps());
 
         const currentStepIndex = ref(-1);
         const startTime = ref(null);
@@ -771,6 +1010,31 @@
           return null;
         });
 
+        const stepProgressText = computed(() => {
+          const total = processingSteps.value.length;
+          const current = currentStepIndex.value >= 0 ? currentStepIndex.value + 1 : 0;
+          return `${Math.min(current, total)}/${total}`;
+        });
+
+        const progressStatusText = computed(() => {
+          if (progressStatus.value === 'success') return '已完成';
+          if (progressStatus.value === 'exception') return '处理失败';
+          if (processing.value) {
+            if (statusText.value) return statusText.value;
+            return currentStep.value ? `进行中：${currentStep.value.title}` : '处理中';
+          }
+          if (processingResult.value) return '已完成';
+          return '待开始';
+        });
+
+        const progressColor = computed(() => {
+          if (progressStatus.value === 'exception') return '#f56c6c';
+          if (progressStatus.value === 'success') return '#1fb981';
+          if (progressPercentage.value < 30) return '#7aa4ff';
+          if (progressPercentage.value < 70) return '#1b6ef3';
+          return '#0f9c9c';
+        });
+
         // 格式化时间
         const formatTime = (seconds) => {
           const mins = Math.floor(seconds / 60);
@@ -780,31 +1044,131 @@
 
         // 更新经过时间
         let timeInterval = null;
-        const updateElapsedTime = () => {
-          if (startTime.value) {
-            const elapsed = Math.floor((Date.now() - startTime.value) / 1000);
-            elapsedTime.value = formatTime(elapsed);
-          }
-        };
-
-        // 更新步骤状态
-        const updateStep = (index, status) => {
-          if (index >= 0 && index < processingSteps.value.length) {
-            processingSteps.value[index].status = status;
-            if (status === 'active') {
-              processingSteps.value[index].time = new Date().toLocaleTimeString();
-            } else if (status === 'completed') {
-              processingSteps.value[index].time = elapsedTime.value;
+          const updateElapsedTime = () => {
+            if (startTime.value) {
+              const elapsed = Math.floor((Date.now() - startTime.value) / 1000);
+              elapsedTime.value = formatTime(elapsed);
             }
-            currentStepIndex.value = index;
-          }
-        };
+          };
 
-        const extractBandName = (filename) => {
-          const upperFilename = filename.toUpperCase();
-          for (let i = 1; i <= 11; i++) {
-            if (upperFilename.includes(`B${i}.`) || upperFilename.includes(`_B${i}.`)) {
-              return `B${i}`;
+          const resolveStepIndex = (steps) => {
+            if (!Array.isArray(steps)) return -1;
+            const activeIdx = steps.findIndex(step => step.status === 'active');
+            if (activeIdx !== -1) return activeIdx;
+            for (let i = steps.length - 1; i >= 0; i--) {
+              if (steps[i].status === 'completed') return i;
+            }
+            return -1;
+          };
+
+          // 更新步骤状态
+          const updateStep = (index, status) => {
+            if (index >= 0 && index < processingSteps.value.length) {
+              processingSteps.value[index].status = status;
+              if (status === 'active') {
+                processingSteps.value[index].time = new Date().toLocaleTimeString();
+              } else if (status === 'completed') {
+                processingSteps.value[index].time = elapsedTime.value;
+              }
+              currentStepIndex.value = resolveStepIndex(processingSteps.value);
+            }
+          };
+
+          const applyStepsFromServer = (steps) => {
+            if (Array.isArray(steps) && steps.length > 0) {
+              processingSteps.value = steps;
+              currentStepIndex.value = resolveStepIndex(steps);
+            }
+          };
+
+          const clearProgressTimers = () => {
+            if (statusTimer) {
+              clearInterval(statusTimer);
+              statusTimer = null;
+            }
+            if (timeInterval) {
+              clearInterval(timeInterval);
+              timeInterval = null;
+            }
+          };
+
+          const fetchProgress = async () => {
+            if (!jobId.value) return;
+            try {
+              const { data } = await axios.get(`${API_BASE_URL}/preprocess_landsat8_status/${jobId.value}`);
+              pollErrorCount = 0;
+              if (data.steps) {
+                applyStepsFromServer(data.steps);
+              }
+              if (typeof data.progress === 'number') {
+                progressPercentage.value = data.progress;
+              }
+              statusText.value = data.detail || '';
+
+              if (data.status === 'success') {
+                progressStatus.value = 'success';
+                processingResult.value = data.result;
+                processing.value = false;
+                clearProgressTimers();
+                await loadCompositePreviews();
+                ElMessage.success({
+                  message: '影像预处理完成！',
+                  duration: 3000,
+                  showClose: true
+                });
+              } else if (data.status === 'error') {
+                progressStatus.value = 'exception';
+                processing.value = false;
+                clearProgressTimers();
+                ElMessage.error('处理失败: ' + (data.error || data.detail || '未知错误'));
+              } else {
+                progressStatus.value = '';
+              }
+            } catch (error) {
+              pollErrorCount += 1;
+              console.error('查询进度失败', error);
+              if (pollErrorCount >= 3) {
+                progressStatus.value = 'exception';
+                processing.value = false;
+                clearProgressTimers();
+                ElMessage.error('无法获取进度，请稍后重试');
+              }
+            }
+          };
+
+          const loadCompositePreviews = async () => {
+            if (!processingResult.value || !processingResult.value.composites) {
+              compositePreviews.value = {};
+              return;
+            }
+            previewLoading.value = true;
+            compositePreviews.value = {};
+            try {
+              const entries = Object.entries(processingResult.value.composites);
+              for (const [type, path] of entries) {
+                const formData = new FormData();
+                formData.append('file_path', path);
+                formData.append('max_size', '480');
+                const { data } = await axios.post(`${API_BASE_URL}/preview_raster`, formData, {
+                  headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                if (data?.status === 'success') {
+                  compositePreviews.value[type] = data.preview.base64;
+                }
+              }
+            } catch (error) {
+              console.error('加载合成影像预览失败', error);
+              ElMessage.warning('部分合成影像预览失败');
+            } finally {
+              previewLoading.value = false;
+            }
+          };
+
+          const extractBandName = (filename) => {
+            const upperFilename = filename.toUpperCase();
+            for (let i = 1; i <= 11; i++) {
+              if (upperFilename.includes(`B${i}.`) || upperFilename.includes(`_B${i}.`)) {
+                return `B${i}`;
             }
           }
           return null;
@@ -834,27 +1198,24 @@
           }
 
           processing.value = true;
+          progressStatus.value = '';
           progressPercentage.value = 0;
           processingResult.value = null;
+          compositePreviews.value = {};
+          previewLoading.value = false;
+          statusText.value = '';
+          jobId.value = null;
+          pollErrorCount = 0;
           startTime.value = Date.now();
-          currentStepIndex.value = 0;
+          processingSteps.value = createDefaultSteps();
+          currentStepIndex.value = resolveStepIndex(processingSteps.value);
+          elapsedTime.value = '00:00';
 
-          // 重置所有步骤状态
-          processingSteps.value.forEach(step => {
-            step.status = 'pending';
-            step.time = '';
-          });
-
-          // 启动计时器
+          clearProgressTimers();
           timeInterval = setInterval(updateElapsedTime, 1000);
 
           try {
             const formData = new FormData();
-
-            // 步骤1: 上传文件
-            updateStep(0, 'active');
-            progressPercentage.value = 5;
-            await new Promise(resolve => setTimeout(resolve, 500));
 
             Object.values(bandMap.value).forEach(file => {
               formData.append('bands', file);
@@ -874,66 +1235,26 @@
               formData.append('create_composites', form.createComposites.join(','));
             }
 
+            formData.append('atm_model', form.atmModel);
             formData.append('apply_cloud_mask', form.applyCloudMask.toString());
 
-            updateStep(0, 'completed');
-
-            // 模拟进度更新
-            const stepDurations = [0, 10, 20, 35, 50, 60, 70, 85, 95];
-            let stepIndex = 1;
-
-            const progressInterval = setInterval(() => {
-              if (stepIndex < processingSteps.value.length && processing.value) {
-                updateStep(stepIndex - 1, 'completed');
-                updateStep(stepIndex, 'active');
-                progressPercentage.value = stepDurations[stepIndex] || progressPercentage.value;
-                stepIndex++;
-              } else {
-                clearInterval(progressInterval);
-              }
-            }, 2000); // 每2秒更新一次步骤
-
             const response = await axios.post(
-              `${API_BASE_URL}/preprocess_landsat8`,
+              `${API_BASE_URL}/preprocess_landsat8_async`,
               formData,
               {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                timeout: 300000
+                headers: { 'Content-Type': 'multipart/form-data' }
               }
             );
 
-            clearInterval(progressInterval);
-            clearInterval(timeInterval);
-
-            // 标记所有步骤完成
-            processingSteps.value.forEach((step, index) => {
-              if (step.status !== 'completed') {
-                updateStep(index, 'completed');
-              }
-            });
-
-            progressPercentage.value = 100;
-            progressStatus.value = 'success';
-            processingResult.value = response.data;
-
-            ElMessage.success({
-              message: '影像预处理完成！',
-              duration: 3000,
-              showClose: true
-            });
+            jobId.value = response.data.job_id;
+            statusText.value = '任务已提交，等待处理...';
+            await fetchProgress();
+            statusTimer = setInterval(fetchProgress, 1200);
           } catch (error) {
-            clearInterval(timeInterval);
-            progressPercentage.value = 100;
+            clearProgressTimers();
             progressStatus.value = 'exception';
-
-            // 标记当前步骤为失败
-            if (currentStepIndex.value >= 0) {
-              processingSteps.value[currentStepIndex.value].status = 'exception';
-            }
-
-            ElMessage.error('处理失败: ' + (error.response?.data?.detail || error.message));
-          } finally {
             processing.value = false;
+            ElMessage.error('无法启动处理: ' + (error.response?.data?.detail || error.message));
           }
         };
 
@@ -961,21 +1282,24 @@
             outputDir: 'E:\\Landsat8_Output',
             clipExtent: '',
             createComposites: ['true_color'],
-            applyCloudMask: false
+            applyCloudMask: false,
+            atmModel: 'dos'
           });
           bandFiles.value = [];
           mtlFile.value = [];
           qaFile.value = [];
           bandMap.value = {};
           processingResult.value = null;
+          compositePreviews.value = {};
           progressPercentage.value = 0;
           progressStatus.value = '';
+          statusText.value = '';
+          jobId.value = null;
+          processing.value = false;
           currentStepIndex.value = -1;
           elapsedTime.value = '00:00';
-          processingSteps.value.forEach(step => {
-            step.status = 'pending';
-            step.time = '';
-          });
+          clearProgressTimers();
+          processingSteps.value = createDefaultSteps();
         };
 
         return {
@@ -986,9 +1310,14 @@
           bandMap,
           processing,
           processingResult,
+          compositePreviews,
+          previewLoading,
           progressPercentage,
           progressStatus,
           statusText,
+          progressStatusText,
+          stepProgressText,
+          progressColor,
           processingSteps,
           currentStep,
           currentStepIndex,
@@ -999,242 +1328,286 @@
           handleBandRemove,
           startProcessing,
           selectOutputFolder,
-          resetForm
+          resetForm,
+          loadCompositePreviews
         };
       },
       template: `
-        <div>
-          <el-form :model="form" label-width="140px" size="default">
-            <!-- 波段文件上传 -->
-            <div class="upload-section">
-              <h3 class="section-title">📁 波段文件</h3>
-              <el-upload
-                v-model:file-list="bandFiles"
-                :auto-upload="false"
-                :on-change="handleBandChange"
-                :on-remove="handleBandRemove"
-                multiple
-                drag
-                accept=".tif,.tiff,.img"
-              >
-                <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                <div class="el-upload__text">
-                  拖拽 Landsat 8 波段文件到此处，或<em>点击上传</em>
-                </div>
-                <template #tip>
-                  <div class="el-upload__tip">
-                    支持 .tif, .tiff, .img 格式，文件名应包含波段编号
-                  </div>
-                </template>
-              </el-upload>
-
-              <div v-if="Object.keys(bandMap).length > 0" class="band-preview">
-                <h4>已识别波段:</h4>
-                <el-tag
-                  v-for="(file, band) in bandMap"
-                  :key="band"
-                  type="success"
-                  style="margin: 4px;"
-                >
-                  {{ band }}
-                </el-tag>
-              </div>
-            </div>
-
-            <!-- MTL和QA文件 -->
-            <div class="upload-section">
-              <h3 class="section-title">📋 元数据文件 (可选)</h3>
-              <el-form-item label="MTL元数据:">
-                <el-upload
-                  v-model:file-list="mtlFile"
-                  :auto-upload="false"
-                  :limit="1"
-                  accept=".txt"
-                >
-                  <el-button type="primary">选择MTL文件</el-button>
-                </el-upload>
-              </el-form-item>
-
-              <el-form-item label="QA波段:">
-                <el-upload
-                  v-model:file-list="qaFile"
-                  :auto-upload="false"
-                  :limit="1"
-                  accept=".tif,.tiff,.img"
-                >
-                  <el-button type="primary">选择QA波段</el-button>
-                </el-upload>
-              </el-form-item>
-            </div>
-
-            <!-- 输出设置 -->
-            <div class="upload-section">
-              <h3 class="section-title">💾 输出设置</h3>
-              <el-form-item label="输出目录:">
-                <div style="display: flex; gap: 10px;">
-                  <el-input
-                    v-model="form.outputDir"
-                    placeholder="输出路径"
-                    clearable
-                    style="flex: 1;"
-                  />
-                  <el-button
-                    type="primary"
-                    @click="selectOutputFolder"
-                    :loading="selectingFolder"
+        <div class="processing-layout">
+          <div class="left-pane">
+            <div class="panel-card">
+              <el-form :model="form" label-width="140px" size="default">
+                <!-- 波段文件上传 -->
+                <div class="upload-section">
+                  <h3 class="section-title">波段文件</h3>
+                  <el-upload
+                    v-model:file-list="bandFiles"
+                    :auto-upload="false"
+                    :on-change="handleBandChange"
+                    :on-remove="handleBandRemove"
+                    multiple
+                    drag
+                    accept=".tif,.tiff,.img"
                   >
-                    <el-icon><folder-opened /></el-icon>
-                    浏览
-                  </el-button>
-                </div>
-              </el-form-item>
-            </div>
+                    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                    <div class="el-upload__text">
+                      拖拽 Landsat 8 波段文件到此处，或<em>点击上传</em>
+                    </div>
+                    <template #tip>
+                      <div class="el-upload__tip">
+                        支持 .tif, .tiff, .img 格式，文件名应包含波段编号
+                      </div>
+                    </template>
+                  </el-upload>
 
-            <!-- 合成影像设置 -->
-            <div class="upload-section">
-              <h3 class="section-title">🎨 合成影像类型</h3>
-              <el-form-item>
-                <el-checkbox-group v-model="form.createComposites">
-                  <el-checkbox label="true_color">真彩色</el-checkbox>
-                  <el-checkbox label="false_color">假彩色</el-checkbox>
-                  <el-checkbox label="agriculture">农业</el-checkbox>
-                  <el-checkbox label="urban">城市</el-checkbox>
-                  <el-checkbox label="ndvi">NDVI</el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-            </div>
-
-            <!-- 云掩膜设置 -->
-            <div class="upload-section">
-              <h3 class="section-title">☁️ 云掩膜设置</h3>
-              <el-form-item label="应用云掩膜:">
-                <el-switch
-                  v-model="form.applyCloudMask"
-                  :disabled="!qaFile.length"
-                />
-              </el-form-item>
-            </div>
-
-            <!-- 操作按钮 -->
-            <el-form-item>
-              <el-button
-                type="primary"
-                @click="startProcessing"
-                :loading="processing"
-                :disabled="!canStartProcessing"
-                size="large"
-              >
-                <span v-if="!processing">开始预处理</span>
-                <span v-else>处理中...</span>
-              </el-button>
-
-              <el-button @click="resetForm" size="large" :disabled="processing">
-                重置
-              </el-button>
-            </el-form-item>
-          </el-form>
-
-          <!-- 增强的进度显示 -->
-          <div v-if="processing || processingResult" class="progress-container">
-            <div class="progress-header">
-              <div class="progress-title">
-                <span v-if="processing">🚀 处理进行中</span>
-                <span v-else-if="progressStatus === 'success'">✅ 处理完成</span>
-                <span v-else-if="progressStatus === 'exception'">❌ 处理失败</span>
-              </div>
-              <div class="progress-time">
-                <el-icon><clock /></el-icon>
-                <span>已用时: {{ elapsedTime }}</span>
-              </div>
-            </div>
-
-            <!-- 当前步骤卡片 -->
-            <div v-if="processing && currentStep" class="current-step-card">
-              <div class="current-step-title">
-                <span class="step-icon">⚙</span>
-                {{ currentStep.title }}
-              </div>
-              <div class="current-step-detail">
-                {{ currentStep.detail }}
-              </div>
-            </div>
-
-            <!-- 总体进度条 -->
-            <el-progress
-              :percentage="progressPercentage"
-              :status="progressStatus"
-              :stroke-width="16"
-              :show-text="true"
-              style="margin-bottom: 20px;"
-            >
-              <template #default="{ percentage }">
-                <span style="font-weight: 600;">{{ percentage }}%</span>
-              </template>
-            </el-progress>
-
-            <!-- 步骤时间线 -->
-            <div class="steps-timeline">
-              <div
-                v-for="step in processingSteps"
-                :key="step.id"
-                :class="['timeline-item', step.status]"
-              >
-                <div class="timeline-dot">
-                  <span v-if="step.status === 'completed'">✓</span>
-                  <span v-else-if="step.status === 'active'">⚙</span>
-                  <span v-else>{{ step.id }}</span>
-                </div>
-                <div class="timeline-content">
-                  <div class="timeline-step-title">{{ step.title }}</div>
-                  <div class="timeline-step-detail">{{ step.detail }}</div>
-                  <div v-if="step.time" class="timeline-step-time">
-                    <el-icon><clock /></el-icon>
-                    {{ step.time }}
+                  <div v-if="Object.keys(bandMap).length > 0" class="band-preview">
+                    <h4>已识别波段:</h4>
+                    <el-tag
+                      v-for="(file, band) in bandMap"
+                      :key="band"
+                      type="success"
+                      style="margin: 4px;"
+                    >
+                      {{ band }}
+                    </el-tag>
                   </div>
                 </div>
-              </div>
+
+                <!-- MTL和QA文件 -->
+                <div class="upload-section">
+                  <h3 class="section-title">元数据文件 (可选)</h3>
+                  <el-form-item label="MTL元数据:">
+                    <el-upload
+                      v-model:file-list="mtlFile"
+                      :auto-upload="false"
+                      :limit="1"
+                      accept=".txt"
+                    >
+                      <el-button type="primary">选择MTL文件</el-button>
+                    </el-upload>
+                  </el-form-item>
+
+                  <el-form-item label="QA波段:">
+                    <el-upload
+                      v-model:file-list="qaFile"
+                      :auto-upload="false"
+                      :limit="1"
+                      accept=".tif,.tiff,.img"
+                    >
+                      <el-button type="primary">选择QA波段</el-button>
+                    </el-upload>
+                  </el-form-item>
+                </div>
+
+                <!-- 输出设置 -->
+                <div class="upload-section">
+                  <h3 class="section-title">输出设置</h3>
+                  <el-form-item label="输出目录:">
+                    <div style="display: flex; gap: 10px;">
+                      <el-input
+                        v-model="form.outputDir"
+                        placeholder="输出路径"
+                        clearable
+                        style="flex: 1;"
+                      />
+                      <el-button
+                        type="primary"
+                        @click="selectOutputFolder"
+                        :loading="selectingFolder"
+                      >
+                        <el-icon><folder-opened /></el-icon>
+                        浏览
+                      </el-button>
+                    </div>
+                  </el-form-item>
+                </div>
+
+                <!-- 大气校正模型 -->
+                <div class="upload-section">
+                  <h3 class="section-title">大气校正模型</h3>
+                  <el-form-item>
+                    <el-radio-group v-model="form.atmModel" size="small">
+                      <el-radio label="dos">DOS 暗目标法</el-radio>
+                      <el-radio label="6s">6S 模型</el-radio>
+                    </el-radio-group>
+                    <div style="font-size: 12px; color: #909399; margin-top: 6px;">
+                      DOS 计算简洁；6S 更贴近物理模型，适合精度要求更高的场景。
+                    </div>
+                  </el-form-item>
+                </div>
+
+                <!-- 合成影像设置 -->
+                <div class="upload-section">
+                  <h3 class="section-title">合成影像类型</h3>
+                  <el-form-item>
+                    <el-checkbox-group v-model="form.createComposites">
+                      <el-checkbox label="true_color">真彩色</el-checkbox>
+                      <el-checkbox label="false_color">假彩色</el-checkbox>
+                      <el-checkbox label="agriculture">农业</el-checkbox>
+                      <el-checkbox label="urban">城市</el-checkbox>
+                      <el-checkbox label="ndvi">NDVI</el-checkbox>
+                    </el-checkbox-group>
+                  </el-form-item>
+                </div>
+
+                <!-- 云掩膜设置 -->
+                <div class="upload-section">
+                  <h3 class="section-title">云掩膜设置</h3>
+                  <el-form-item label="应用云掩膜:">
+                    <el-switch
+                      v-model="form.applyCloudMask"
+                      :disabled="!qaFile.length"
+                    />
+                  </el-form-item>
+                </div>
+
+                <!-- 操作按钮 -->
+                <el-form-item label-width="0">
+                  <div class="action-row">
+                    <el-button
+                      type="primary"
+                      @click="startProcessing"
+                      :loading="processing"
+                      :disabled="!canStartProcessing"
+                      size="large"
+                    >
+                      <span v-if="!processing">开始预处理</span>
+                      <span v-else>处理中...</span>
+                    </el-button>
+
+                    <el-button @click="resetForm" size="large" :disabled="processing">
+                      重置
+                    </el-button>
+                  </div>
+                </el-form-item>
+              </el-form>
             </div>
           </div>
 
-          <!-- 处理结果 -->
-          <div v-if="processingResult">
-            <h3 class="section-title">📊 处理结果</h3>
+          <div class="right-pane">
+            <div v-if="processing || processingResult" class="panel-card progress-card">
+              <div class="progress-header">
+                <div class="progress-title">
+                  <span v-if="processing">处理中</span>
+                  <span v-else-if="progressStatus === 'success'">处理完成</span>
+                  <span v-else-if="progressStatus === 'exception'">处理失败</span>
+                </div>
+                <div class="progress-time">
+                  <el-icon><clock /></el-icon>
+                  <span>用时 {{ elapsedTime }}</span>
+                </div>
+              </div>
 
-            <el-alert
-              v-if="processingResult.status === 'success'"
-              title="✅ 处理成功！"
-              type="success"
-              :closable="false"
-              show-icon
-              style="margin-bottom: 15px;"
-            />
+              <div class="progress-meta">
+                <span class="meta-label">状态</span>
+                <span class="meta-value">{{ progressStatusText }}</span>
+                <span class="meta-sep">/</span>
+                <span class="meta-label">步骤</span>
+                <span class="meta-value">{{ stepProgressText }}</span>
+              </div>
 
-            <div v-if="processingResult.summary" style="margin-top: 15px;">
-              <el-descriptions :column="2" border>
-                <el-descriptions-item label="处理波段数">
-                  <el-tag type="success">{{ processingResult.summary.total_bands_processed }} 个</el-tag>
-                </el-descriptions-item>
-                <el-descriptions-item label="合成影像数">
-                  <el-tag type="primary">{{ processingResult.summary.composites_created }} 个</el-tag>
-                </el-descriptions-item>
-                <el-descriptions-item label="输出目录" :span="2">
-                  <el-text type="primary" style="word-break: break-all;">
-                    {{ processingResult.summary.output_directory }}
-                  </el-text>
-                </el-descriptions-item>
-              </el-descriptions>
+              <div v-if="processing && currentStep" class="current-step-card">
+                <div class="current-step-title">
+                  {{ currentStep.title }}
+                </div>
+                <div class="current-step-detail">
+                  {{ currentStep.detail }}
+                </div>
+              </div>
+
+              <el-progress
+                :percentage="progressPercentage"
+                :status="progressStatus"
+                :stroke-width="16"
+                :show-text="true"
+                :color="progressColor"
+                class="progress-bar"
+              >
+                <template #default="{ percentage }">
+                  <span style="font-weight: 600;">{{ percentage }}%</span>
+                </template>
+              </el-progress>
+
+              <div class="steps-timeline">
+                <div
+                  v-for="(step, index) in processingSteps"
+                  :key="step.id || index"
+                  :class="['timeline-item', step.status]"
+                >
+                  <div class="timeline-dot">{{ step.order || index + 1 }}</div>
+                  <div class="timeline-content">
+                    <div class="timeline-step-title">{{ step.title }}</div>
+                    <div class="timeline-step-detail">{{ step.detail }}</div>
+                    <div v-if="step.time" class="timeline-step-time">
+                      <el-icon><clock /></el-icon>
+                      {{ step.time }}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div v-if="processingResult.composites && Object.keys(processingResult.composites).length > 0" style="margin-top: 15px;">
-              <h4>🎨 合成影像文件:</h4>
-              <el-table :data="Object.entries(processingResult.composites).map(([k,v]) => ({type: k, path: v}))" stripe style="margin-top: 10px;">
-                <el-table-column prop="type" label="类型" width="150">
-                  <template #default="scope">
-                    <el-tag>{{ scope.row.type }}</el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="path" label="文件路径" show-overflow-tooltip />
-              </el-table>
+            <div v-if="processingResult" class="panel-card">
+              <h3 class="section-title">处理结果</h3>
+
+              <el-alert
+                v-if="processingResult.status === 'success'"
+                title="处理成功"
+                type="success"
+                :closable="false"
+                show-icon
+                style="margin-bottom: 15px;"
+              />
+
+              <div v-if="processingResult.summary" style="margin-top: 15px;">
+                <el-descriptions :column="2" border>
+                  <el-descriptions-item label="处理波段数">
+                    <el-tag type="success">{{ processingResult.summary.total_bands_processed }} 个</el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="合成影像数">
+                    <el-tag type="primary">{{ processingResult.summary.composites_created }} 个</el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="大气校正模型">
+                    <el-tag type="info">{{ (processingResult.summary.atm_model || '').toUpperCase() }}</el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="输出目录" :span="2">
+                    <el-text type="primary" style="word-break: break-all;">
+                      {{ processingResult.summary.output_directory }}
+                    </el-text>
+                  </el-descriptions-item>
+                </el-descriptions>
+              </div>
+
+              <div v-if="processingResult.composites && Object.keys(processingResult.composites).length > 0" style="margin-top: 15px;">
+                <h4>合成影像文件:</h4>
+                <el-table :data="Object.entries(processingResult.composites).map(([k,v]) => ({type: k, path: v}))" stripe style="margin-top: 10px;">
+                  <el-table-column prop="type" label="类型" width="150">
+                    <template #default="scope">
+                      <el-tag>{{ scope.row.type }}</el-tag>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="path" label="文件路径" show-overflow-tooltip />
+                </el-table>
+
+                <div style="margin-top: 14px;">
+                  <h4 style="margin-bottom: 8px;">合成影像预览:</h4>
+                  <div v-if="previewLoading" style="color: #909399; font-size: 13px;">预览生成中...</div>
+                  <el-row :gutter="12" v-if="Object.keys(compositePreviews).length > 0">
+                    <el-col :span="12" v-for="(img, key) in compositePreviews" :key="key" style="margin-bottom: 12px;">
+                      <el-card shadow="hover">
+                        <div style="font-weight: 600; margin-bottom: 6px;">{{ key }}</div>
+                        <img :src="'data:image/png;base64,' + img" style="width: 100%; border-radius: 6px;" />
+                        <div style="font-size: 12px; color: #909399; margin-top: 6px; word-break: break-all;">
+                          {{ processingResult.composites[key] }}
+                        </div>
+                      </el-card>
+                    </el-col>
+                  </el-row>
+                  <div v-else-if="!previewLoading">
+                    <el-button type="primary" plain size="small" @click="loadCompositePreviews">重新加载预览</el-button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1254,7 +1627,8 @@
         'landsat8-processor': Landsat8ProcessorComponent,
         'band-info-panel': BandInfoPanelComponent,
         'composite-types-panel': CompositeTypesPanelComponent,
-        'tools-panel': ToolsPanelComponent
+        'tools-panel': ToolsPanelComponent,
+        'model-compare-panel': ModelComparePanelComponent
       }
     });
 
